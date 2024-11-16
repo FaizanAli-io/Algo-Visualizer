@@ -1,11 +1,15 @@
 import pygame
-from config import DARK_GRAY, ACCENT_COLOR, LIGHT_GRAY, WHITE, FONT_SMALL, FONT_MEDIUM
+
+from config import (
+    Font as F,
+    Color as C,
+)
 
 
 class Dropdown:
     def __init__(self, x, y, w, h, options):
         self.rect = pygame.Rect(x, y, w, h)
-        self.color = DARK_GRAY
+        self.color = C.DARK_GRAY
         midpoint = len(options) // 2
         self.options_left = [
             f"{opt.split('.')[0]} points" for opt in options[:midpoint]
@@ -25,14 +29,14 @@ class Dropdown:
 
     def _draw_dropdown_rect(self, surface):
         pygame.draw.rect(surface, self.color, self.rect, 0)
-        pygame.draw.rect(surface, ACCENT_COLOR, self.rect, 2)
+        pygame.draw.rect(surface, C.ACCENT_COLOR, self.rect, 2)
 
     def _draw_selected_text(self, surface):
         if self.selected:
-            text = FONT_MEDIUM.render(self.selected, True, WHITE)
+            text = F.FONT_MEDIUM.render(self.selected, True, C.WHITE)
             text_rect = text.get_rect(center=self.rect.center)
         else:
-            text = FONT_MEDIUM.render("Select Input Size", True, LIGHT_GRAY)
+            text = F.FONT_MEDIUM.render("Select Input Size", True, C.LIGHT_GRAY)
             text_rect = text.get_rect(
                 midleft=(self.rect.x + 10, self.rect.y + self.rect.height // 2)
             )
@@ -54,17 +58,19 @@ class Dropdown:
             )
             option_color = self._get_option_color(column_id, i)
             pygame.draw.rect(surface, option_color, option_rect)
-            pygame.draw.rect(surface, WHITE, option_rect, 1)
+            pygame.draw.rect(surface, C.WHITE, option_rect, 1)
 
-            option_text = FONT_SMALL.render(
+            option_text = F.FONT_SMALL.render(
                 option,
                 True,
-                WHITE if (column_id, i) == self.hovered_option else LIGHT_GRAY,
+                C.WHITE if (column_id, i) == self.hovered_option else C.LIGHT_GRAY,
             )
             surface.blit(option_text, (option_rect.x + 10, option_rect.y + 5))
 
     def _get_option_color(self, column_id, index):
-        return ACCENT_COLOR if (column_id, index) == self.hovered_option else DARK_GRAY
+        return (
+            C.ACCENT_COLOR if (column_id, index) == self.hovered_option else C.DARK_GRAY
+        )
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
