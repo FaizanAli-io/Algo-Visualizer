@@ -53,33 +53,52 @@ class PointScreen:
 
     def calculate_closest(self, a, b):
         if b - a == 3:
-            x, y, z = a, a + 1, b - 1
+            p1, p2, p3 = (
+                self.scaled_points[a],
+                self.scaled_points[a + 1],
+                self.scaled_points[b - 1],
+            )
 
             d1, d2, d3 = (
-                math.dist(self.scaled_points[x], self.scaled_points[y]),
-                math.dist(self.scaled_points[x], self.scaled_points[z]),
-                math.dist(self.scaled_points[y], self.scaled_points[z]),
+                math.dist(p1, p2),
+                math.dist(p1, p3),
+                math.dist(p2, p3),
             )
 
             if d1 <= d2 and d1 <= d3:
-                return (d1, (x, y))
+                closest = (d1, (p1, p2))
             elif d2 <= d3:
-                return (d2, (x, z))
+                closest = (d2, (p1, p3))
             else:
-                return (d3, (y, z))
+                closest = (d3, (p2, p3))
 
         else:
-            return (
-                math.dist(self.scaled_points[a], self.scaled_points[b - 1]),
-                (a, b - 1),
-            )
+            p1, p2 = self.scaled_points[a], self.scaled_points[b - 1]
+            closest = (math.dist(p1, p2), (p1, p2))
+
+        self.draw_connected_points(*closest[1])
+
+        return closest
 
     def crop_points(self, points, start, width):
         cropped = [point for point in points if start <= point[0] <= start + width]
-
         cropped.sort(key=lambda x: x[1])
-
         return cropped
+
+    def box_points(self, points, dist, i):
+        for point in points[i:]:
+            print(point[1] - points[i][1], end=" ")
+        print()
+
+        return [point for point in points[i:] if point[1] - points[i][1] <= dist]
+
+    def update_closest(self, closest, points):
+        for i in range(1, len(points)):
+            dist = math.dist(points[0], points[i])
+            if dist < closest[0]:
+                closest = dist, (points[0], points[i])
+
+        return closest
 
     def find_closest_pair(self):
         self.scaled_points.sort(key=lambda x: x[0])
@@ -90,14 +109,10 @@ class PointScreen:
 
         if length == 2:
             self.draw_edge_case_points(a, b)
-            self.await_keypress()
-
             return self.calculate_closest(a, b)
 
         if length == 3:
             self.draw_edge_case_points(a, b)
-            self.await_keypress()
-
             return self.calculate_closest(a, b)
 
         m = (a + b) // 2
@@ -111,7 +126,11 @@ class PointScreen:
 
         closest = left if left[0] <= right[0] else right
 
+        self.draw_connected_points(*closest[1])
+
         final_closest = self.animate_cross_combination(closest, a, m, b)
+
+        self.draw_connected_points(*final_closest[1])
 
         return final_closest
 
@@ -145,8 +164,9 @@ class PointScreen:
         self.await_keypress()
 
         for i in range(len(cropped_points) - 1):
-            self.draw_cross_case_points(cropped_points, i)
-            self.await_keypress()
+            boxed_points = self.box_points(cropped_points, closest[0], i)
+            closest = self.update_closest(closest, boxed_points)
+            self.draw_cross_case_points(boxed_points)
 
         return closest
 
@@ -199,12 +219,13 @@ class PointScreen:
 
         for i in range(len(points)):
             for j in range(i + 1, len(points)):
-                pygame.draw.line(self.screen, C.LIGHT_GRAY, points[i], points[j], 1)
+                pygame.draw.line(self.screen, C.LIGHT_GRAY, points[i], points[j])
             pygame.draw.circle(self.screen, C.GREEN, points[i], 3)
 
         pygame.display.flip()
+        self.await_keypress()
 
-    def draw_cross_case_points(self, points, x):
+    def draw_cross_case_points(self, points):
         self.screen.fill(C.BLACK)
 
         for point in self.scaled_points:
@@ -213,7 +234,21 @@ class PointScreen:
         for point in points:
             pygame.draw.circle(self.screen, C.GREEN, point, 3)
 
-        for i in range(x + 1, min(x + 7, len(points))):
-            pygame.draw.line(self.screen, C.LIGHT_GRAY, points[x], points[i], 1)
+        for i in range(1, len(points)):
+            pygame.draw.line(self.screen, C.LIGHT_GRAY, points[0], points[i])
 
         pygame.display.flip()
+        self.await_keypress()
+
+    def draw_connected_points(self, point1, point2):
+        self.screen.fill(C.BLACK)
+
+        for point in self.scaled_points:
+            pygame.draw.circle(self.screen, C.WHITE, point, 2)
+
+        pygame.draw.circle(self.screen, C.YELLOW, point1, 2)
+        pygame.draw.circle(self.screen, C.YELLOW, point2, 2)
+        pygame.draw.line(self.screen, C.LIGHT_GRAY, point1, point2)
+
+        pygame.display.flip()
+        self.await_keypress()

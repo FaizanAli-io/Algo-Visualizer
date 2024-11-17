@@ -20,6 +20,7 @@ class Color:
     RED = (255, 0, 0)
     BLUE = (0, 0, 255)
     GREEN = (0, 255, 0)
+    YELLOW = (255, 255, 0)
     WHITE = (255, 255, 255)
     BG_COLOR = (44, 62, 80)
     DARK_GRAY = (34, 47, 62)
