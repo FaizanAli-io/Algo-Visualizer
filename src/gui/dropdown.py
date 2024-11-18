@@ -10,16 +10,13 @@ class Dropdown:
     def __init__(self, x, y, w, h, options):
         self.rect = pygame.Rect(x, y, w, h)
         self.color = C.DARK_GRAY
-        midpoint = len(options) // 2
-        self.options_left = [
-            f"{opt.split('.')[0]} points" for opt in options[:midpoint]
-        ]
-        self.options_right = [
-            f"{opt.split('.')[0]} points" for opt in options[midpoint:]
-        ]
-        self.selected = None
         self.open = False
+        self.selected = None
         self.hovered_option = (-1, -1)
+
+        midpoint = len(options) // 2
+        self.options_left = [f"{opt.split('.')[0]}" for opt in options[:midpoint]]
+        self.options_right = [f"{opt.split('.')[0]}" for opt in options[midpoint:]]
 
     def draw(self, surface):
         self._draw_dropdown_rect(surface)
@@ -60,7 +57,7 @@ class Dropdown:
             pygame.draw.rect(surface, option_color, option_rect)
             pygame.draw.rect(surface, C.WHITE, option_rect, 1)
 
-            option_text = F.FONT_SMALL.render(
+            option_text = F.FONT_MEDIUM.render(
                 option,
                 True,
                 C.WHITE if (column_id, i) == self.hovered_option else C.LIGHT_GRAY,

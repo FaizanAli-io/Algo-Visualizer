@@ -1,5 +1,5 @@
 import pygame
-from gui.menu import main_menu
+from gui.main_menu import main_menu
 from config import SCREEN_WIDTH, SCREEN_HEIGHT
 
 pygame.init()
