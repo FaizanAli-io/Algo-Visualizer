@@ -15,12 +15,14 @@ def generate_coordinates(n: int, root: str, suffix: int) -> None:
             file.write(f"({x}, {y})\n")
 
 
-def generate_binary_pairs(file_name, bit_size, count=100):
+def generate_integer_pairs(file_name, digits, count=100):
+    start = 10 ** (digits - 1)
+    limit = 10 ** (digits) - 1
     with open(file_name, "w") as f:
         for _ in range(count):
-            binary1 = f"{random.getrandbits(bit_size):0{bit_size}b}"
-            binary2 = f"{random.getrandbits(bit_size):0{bit_size}b}"
-            f.write(f"{binary1}, {binary2}\n")
+            integer1 = random.randint(start, limit)
+            integer2 = random.randint(start, limit)
+            f.write(f"{integer1}, {integer2}\n")
 
 
 def handler_points():
@@ -39,8 +41,10 @@ def handler_points():
         generate_coordinates(num, root, suffix)
 
 
-def handler_binary():
-    for num in range(1, 11):
-        bits = num * 16
+def handler_integer():
+    for i in range(1, 11):
         root = "src\\inputs\\integer_mult\\"
-        generate_binary_pairs(f"{root}{bits}.txt", bits)
+        generate_integer_pairs(f"{root}{i * 8}.txt", i * 8)
+
+
+handler_integer()

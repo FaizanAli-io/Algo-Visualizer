@@ -11,6 +11,7 @@ from config import Color as C
 from gui.dropdown import Dropdown
 from gui.start_button import StartButton
 from gui.point_screen import PointScreen
+from gui.multiply_screen import MultiplyScreen
 from utils.file_loader import get_input_options
 
 pygame.init()
@@ -33,7 +34,7 @@ def main_menu(screen):
     start_button_integer_mult = StartButton(SCREEN_WIDTH // 2 + 20, 350, 300, 50)
 
     closest_points_callback = lambda: run_point_screen(dropdown_closest_points.selected)
-    integer_mult_callback = lambda: print("Hello, World!")
+    integer_mult_callback = lambda: run_multiply_screen(dropdown_integer_mult.selected)
 
     title_string = "Closest Point Algorithm"
     subtitle_string = "Choose input sizes to start visualization"
@@ -78,3 +79,9 @@ def run_point_screen(selected_option):
     """Handles running the point screen."""
     point_screen = PointScreen(screen, selected_option)
     point_screen.find_closest_pair()
+
+
+def run_multiply_screen(selected_option):
+    """Handles running the multiply screen."""
+    multiply_screen = MultiplyScreen(screen, selected_option)
+    multiply_screen.run()
