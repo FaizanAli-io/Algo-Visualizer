@@ -2,13 +2,15 @@ import random
 
 
 def generate_coordinates(n: int, root: str, suffix: int) -> None:
-    coordinates = [
-        (
-            random.randint(0, 980) + 50,
-            random.randint(0, 500) + 50,
+    coordinates = set()
+
+    while len(coordinates) < n:
+        coordinates.add(
+            (
+                random.randint(0, 980) + 50,
+                random.randint(0, 500) + 50,
+            )
         )
-        for _ in range(n)
-    ]
 
     with open(f"{root}{n} ({suffix}).txt", "w") as file:
         for x, y in coordinates:
@@ -43,8 +45,6 @@ def handler_points():
 
 def handler_integer():
     for i in range(1, 11):
+        size = str(i * 8).zfill(2)
         root = "src\\inputs\\integer_mult\\"
-        generate_integer_pairs(f"{root}{i * 8}.txt", i * 8)
-
-
-handler_integer()
+        generate_integer_pairs(f"{root}{size}.txt", int(size))

@@ -25,10 +25,16 @@ class PointScreen:
             self.points[a + 1],
             self.points[b - 1],
         )
+
+        if b - a == 2:
+            return math.dist(p1, p2), (p1, p2)
+
         distances = [math.dist(p1, p2), math.dist(p1, p3), math.dist(p2, p3)]
         min_dist = min(distances)
+
         closest_points = [(p1, p2), (p1, p3), (p2, p3)][distances.index(min_dist)]
         self.draw_connected_points(*closest_points)
+
         return min_dist, closest_points
 
     def crop_points(self, points, start, width):
@@ -37,7 +43,7 @@ class PointScreen:
         )
 
     def box_points(self, points, dist, i):
-        return [point for point in points[i:] if point[1] - points[i][1] <= dist]
+        return [point for point in points[i + 1 :] if point[1] - points[i][1] <= dist]
 
     def update_closest(self, closest, points):
         for i in range(1, len(points)):
@@ -47,12 +53,14 @@ class PointScreen:
 
         return closest
 
-    def find_closest_pair(self):
+    def visualize(self):
         self.points.sort(key=lambda x: x[0])
-        self.animate_recursive_split(0, len(self.points))
+        dist, (p1, p2) = self.animate_recursive_split(0, len(self.points))
+        print(f"Closest Points are {p1} and {p2} with a distance of {dist}")
+        self.draw_connected_points(point1=p1, point2=p2, done=True)
 
     def animate_recursive_split(self, a, b):
-        if b - a <= 3:
+        if 1 < b - a < 4:
             self.draw_edge_case_points(a, b)
             return self.calculate_closest(a, b)
 
@@ -110,12 +118,6 @@ class PointScreen:
 
         return closest
 
-    def await_keypress(self):
-        while True:
-            for event in pygame.event.get():
-                if event.type == pygame.KEYDOWN:
-                    return
-
     def draw_points(self):
         self.screen.fill(C.BG_COLOR)
         for point in self.points:
@@ -139,7 +141,13 @@ class PointScreen:
         )
 
         for i, point in enumerate(self.points):
-            color = C.RED if a <= i < m else C.BLUE if m <= i < b else C.WHITE
+            if a <= i < m:
+                color = C.RED
+            elif m <= i < b:
+                color = C.BLUE
+            else:
+                color = C.WHITE
+
             pygame.draw.circle(self.screen, color, point, 2)
 
         pygame.display.flip()
@@ -161,6 +169,7 @@ class PointScreen:
         self.screen.fill(C.BG_COLOR)
         for point in self.points:
             pygame.draw.circle(self.screen, C.WHITE, point, 2)
+
         for point in points:
             pygame.draw.circle(self.screen, C.GREEN, point, 3)
 
@@ -169,7 +178,7 @@ class PointScreen:
 
         pygame.display.flip()
 
-    def draw_connected_points(self, point1, point2):
+    def draw_connected_points(self, point1, point2, done=False):
         self.screen.fill(C.BG_COLOR)
         for point in self.points:
             pygame.draw.circle(self.screen, C.WHITE, point, 2)
@@ -180,3 +189,14 @@ class PointScreen:
 
         pygame.display.flip()
         self.await_keypress()
+
+        while done:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    return
+
+    def await_keypress(self):
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    return
