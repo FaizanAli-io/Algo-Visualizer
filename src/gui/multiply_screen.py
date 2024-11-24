@@ -33,7 +33,13 @@ def karatsuba_visual(x, y, steps):
     ac = karatsuba_visual(a, c, steps)
     bd = karatsuba_visual(b, d, steps)
 
-    ad_plus_bc = karatsuba_visual(a + b, c + d, steps) - ac - bd
+    intermediate = karatsuba_visual(a + b, c + d, steps)
+    ad_plus_bc = intermediate - ac - bd
+
+    steps.append(
+        f"Subtract: {format_number(intermediate)} - {format_number(ac)} - "
+        f"{format_number(bd)} = {format_number(ad_plus_bc)}"
+    )
 
     result = ac * 10 ** (2 * half_n) + ad_plus_bc * 10**half_n + bd
     steps.append(
@@ -159,6 +165,10 @@ class MultiplyScreen:
         # Perform Karatsuba and log steps
         final_result = karatsuba_visual(int1, int2, self.steps)
         total_steps = len(self.steps)
+
+        print(f"Number 1: {int1}")
+        print(f"Number 2: {int2}")
+        print(f"Product : {final_result}")
 
         while running:
             self.screen.fill(C.BG_COLOR)
