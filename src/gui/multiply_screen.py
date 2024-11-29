@@ -2,11 +2,16 @@ import os
 import pygame
 import random
 
-from config import (
-    Font as F,
-    Color as C,
-    SCREEN_WIDTH,
-)
+from config import Font as F, Color as C, SCREEN_WIDTH, WRITE
+
+
+def write(line):
+    if not WRITE:
+        return
+
+    path = os.path.join("src", "results", "multiply_output.txt")
+    with open(path, "a") as outfile:
+        outfile.write(line)
 
 
 def format_number(number):
@@ -78,6 +83,8 @@ class MultiplyScreen:
             if event.type == pygame.QUIT:
                 return False
             elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    return False
                 if self.input_active:
                     self.handle_step_input(event, total_steps)
                 else:
@@ -166,14 +173,13 @@ class MultiplyScreen:
         final_result = karatsuba_visual(int1, int2, self.steps)
         total_steps = len(self.steps)
 
-        print(f"Number 1: {int1}")
-        print(f"Number 2: {int2}")
-        print(f"Product : {final_result}")
+        output = f"Product of {int1} and {int2} is {final_result}.\n"
+        print(output)
+        write(output)
 
         while running:
             self.screen.fill(C.BG_COLOR)
             running = self.handle_events(total_steps)
-
             self.display_original_numbers(int1, int2)
 
             # Display the final result if at the last step
@@ -186,4 +192,4 @@ class MultiplyScreen:
 
             pygame.display.flip()
 
-        pygame.quit()
+        return

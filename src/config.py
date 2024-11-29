@@ -7,6 +7,9 @@ SCREEN_WIDTH, SCREEN_HEIGHT = 1080, 600
 # Fonts
 pygame.font.init()
 
+# Controllers
+WRITE = False
+
 
 class Font:
     FONT_SMALL = pygame.font.Font(None, 36)

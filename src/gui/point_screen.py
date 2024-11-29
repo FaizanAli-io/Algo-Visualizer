@@ -1,7 +1,16 @@
 import os
 import math
 import pygame
-from config import Color as C, SCREEN_HEIGHT
+from config import Color as C, SCREEN_HEIGHT, WRITE
+
+
+def write(line):
+    if not WRITE:
+        return
+
+    path = os.path.join("src", "results", "closest_output.txt")
+    with open(path, "a") as outfile:
+        outfile.write(line)
 
 
 class PointScreen:
@@ -56,7 +65,11 @@ class PointScreen:
     def visualize(self):
         self.points.sort(key=lambda x: x[0])
         dist, (p1, p2) = self.animate_recursive_split(0, len(self.points))
-        print(f"Closest Points are {p1} and {p2} with a distance of {dist}")
+
+        output = f"Closest Points are {p1} and {p2} with a distance of {round(dist, 3)} pixels.\n"
+        print(output)
+        write(output)
+
         self.draw_connected_points(point1=p1, point2=p2, done=True)
 
     def animate_recursive_split(self, a, b):
